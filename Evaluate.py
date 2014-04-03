@@ -8,7 +8,7 @@ class Evaluate_Time:
 		:type s ProjectSchedule
 		:returns schedule execution duration
 		'''
-		return max([ (s.getTaskForAssignment(a).time + a.startTime) for a in s.data if a])
+		return max([ (s._getTaskForAssignment(a).time + a.startTime) for a in s.data if a])
 
 	#def __call__(self, state, task, resources):
 	def getBestAssignment(self, state, task, resources):
@@ -25,7 +25,7 @@ class Evaluate_Time:
 			ns.assign(task, r)
 			assert ns.isOK()
 			# measure time
-			time = self.measureTime(ns)
+			time = self.__call__(ns)
 			if not best or time < best_time:
 				best_time = time
 				best = r
