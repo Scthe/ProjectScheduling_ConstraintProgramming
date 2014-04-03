@@ -16,15 +16,12 @@ class Task:
 
 
 class Person:
-	def __init__(self, skills, cost=0):
+	def __init__(self, skills, cost):
 		'''
 		:param skills: dict f.e. { 'a':3, 'b':1 }, where literal is the name of the skill and number is skill level
 		'''
 		self.skills = skills
 		self.cost = cost
-
-	def __str__(self):
-		return "Person " + str(self.cost)
 
 	def canDo(self, task):
 		can = True
@@ -32,6 +29,9 @@ class Person:
 			can &= s in self.skills and self.skills[s] >= task.skills[s]
 		#print("canDo: p:{}  t:{} -> {}".format(self.cost,task.time,can))
 		return can
+
+	def __str__(self):
+		return "Person " + str(self.cost)
 
 
 class Project:
@@ -61,16 +61,11 @@ class Project:
 	def getPossibleTaskStartTime( t):
 		time = 0
 		for tt in t.constraints:
-			time = max(Project.getPossibleTaskStartTime(tt))
+			time = max(Project.getPossibleTaskStartTime(tt), time)
 		return time
 
 
-
-
-
 class ProjectSchedule:
-	''' :type : Project'''
-	project = None
 
 	class TaskAssignment:
 		def __init__(self, startTime, person):
@@ -82,88 +77,41 @@ class ProjectSchedule:
 			self.person = person
 
 		def __str__(self):
-			#return "<t:{} p:{}>".format(self.task.time,self.person.cost)
-			return "<sTime:{} p:{}>".format(self.startTime, self.person.cost)
+			return "<sTime:{} p:{}>".format(self.startTime, self.person._id)
 
-		#return str(self.startTime)
 
-	def __init__(self, assignments):
-		assert ProjectSchedule.project
-		assert len(assignments) == len(ProjectSchedule.project.tasks)
-		for a, t in zip(assignments, ProjectSchedule.project.tasks):
+	''' :type : Project'''
+	project = None
+	data = []
+
+	def __init__(self, assignments, project):
+		project = project if project else ProjectSchedule.project
+		assert project and (len(assignments) == len(project.tasks))
+		for a, t in zip(assignments, project.tasks):
 			assert (not a) or (a.person.canDo(t))
 
 		self.data = assignments
+		self.project = project
 
 	def copy(self):
-		return ProjectSchedule(list(self.data))
+		return ProjectSchedule(list(self.data), self.project)
 
-	def _repair(self, debug=False):
-		proj = ProjectSchedule.project
-		tasks = proj.tasks
-
-		# step 1 - fix task assignments if needed
-		for assign,t in zip( self.data, tasks):
-			if assign and not assign.person.canDo(t):
-				assign.person = choice( proj.getPersonsForTask(t))
-
-		#step 2 - fix!
-		iter = 0
-		while not self._isOK():  # by gods ! to infinity and beyond !
-			# fix timetable conflicts
-			for p in proj.persons:
-				personsAssignements = [a for a in self.data if a and a.person == p]
-				personsAssignements = sorted(personsAssignements, key=lambda e: e.startTime)
-				lastFin = 0
-				for a in personsAssignements:
-					t = self.getTaskForAssignment(a)
-					a.startTime = max(a.startTime, lastFin)
-					lastFin = a.startTime + t.time
-			# enforce precedence rules
-			getAssignmentForTask = lambda t: self.data[tasks.index(t)]
-			for i, (t, assign) in enumerate(zip(tasks, self.data)):
-				for con in t.constraints:  # do it only for immediate higher level in the task-constraints forest
-					a2 = getAssignmentForTask(con)
-					if a2:
-						a2FinTime = a2.startTime + con.time
-						assign.startTime = max(assign.startTime, a2FinTime)
-			#print( iter)
-			iter += 1
-			assert iter < 2000
-
-		#TODO consolidate - compress tasks
-		'''
-		lastTaskEnd = 0
-		for a in sorted(self.data,key=lambda x:x.startTime):
-			t = self.getTaskForAssignment(a)
-			#print( "last task ended on: {}, this starts {}, change?-{}".format(lastTaskEnd,a.startTime,(a.startTime > lastTaskEnd)))
-			if a.startTime > lastTaskEnd:
-				a.startTime = lastTaskEnd
-			lastTaskEnd = max(a.startTime + t.time,lastTaskEnd)
-		'''
-
-		assert self._isOK()
-		if debug: print("\trepair !")
-		return iter  # pure test driven, ignore in normal GE
-
-	def _isOK(self, throwsIfCritical=False, debug=False):
-		proj = ProjectSchedule.project
+	def _isOK(self, debug=False):
+		proj = self.project
 		tasks = proj.tasks
 		assert len(self.data) == len(tasks)
 
 		ok = True
 		# check tasks per person + if person can do this task
 		for p in proj.persons:
-			personsAssignements = [(a, self.getTaskForAssignment(a)) for a in self.data if a and (a.person == p)]
+			personsAssignements = [(a, self._getTaskForAssignment(a)) for a in self.data if a and (a.person == p)]
 
 			# assert can do all assigned tasks
 			for (a, t) in personsAssignements:
 				if not a.person.canDo(t):
-					if throwsIfCritical:
-						raise Exception("Person {} is unable to complete task {}".format(a.person.cost, t.time))
-					else: ok = False
+					raise Exception("Person {} is unable to complete task {}".format(a.person._id, t._id))
 
-			# assert 'no timeline conflicts'
+			# check 'no timeline conflicts'
 			personsAssignements2 = sorted(personsAssignements, key=lambda e: e[0].startTime)
 			lastTaskEnd = 0
 			for (a, t) in personsAssignements2:
@@ -183,52 +131,57 @@ class ProjectSchedule:
 					# assert this constraint task is finished before task from assignment starts
 					constrAssign = self.data[tasks.index(constr)]
 					constrFinTime = constrAssign.startTime + constr.time
-					ok &= (not a) or a.startTime >= constrFinTime
+					ok &= constrAssign and a.startTime >= constrFinTime
 		if debug:
 			print("OK!" if ok else "Not ok: precedence conflicts")
 
 		return ok
 
-	def getTaskForAssignment(self, assignment):
-		return ProjectSchedule.project.tasks[self.data.index(assignment)]
+	def _getTaskForAssignment(self, assignment):
+		return self.project.tasks[self.data.index(assignment)]
 
-	def assign(self,task,person):
-		# TODO not tested
+	def doable(self, task): # TODO not tested
+		'''
+		:type task Task
+		'''
+		constraintsAssignements = [ a for (a,t) in zip(self.data, self.project.tasks) if t in task.constraints]
+		return not ( None in constraintsAssignements)
+
+
+
+	def assign(self,task,person): # TODO not tested
 		'''
 		:type task Task
 		:type person Person
 		'''
-		tasks = ProjectSchedule.project.tasks
+		tasks = self.project.tasks
 		ind = tasks.index(task)
 		time = 0
-
 		# check assignments for this person
 		personsAssignements = [a for a in self.data if a and a.person == person]
 		if personsAssignements:
-			a = personsAssignements = sorted(personsAssignements, key=lambda e: e.startTime)[-1]
-			time = a.startTime + self.getTaskForAssignment(a).time
-
+			a = sorted(personsAssignements, key=lambda e: e.startTime)[-1] # last assignment
+			time = a.startTime + self._getTaskForAssignment(a).time
 		# check task's precedence rules
 		for t in task.constraints:
 			a = self.data[tasks.index(t)]
-			if a:
-				time = max(time, t.time+a.startTime)
+			if a: time = max(time, t.time+a.startTime)
 
 		# assignment
 		self.data[ind] = ProjectSchedule.TaskAssignment(time,person)
 
 	@staticmethod
-	def generateRandomSchedule(debug=True):
-		assert ProjectSchedule.project
+	def generateRandomSchedule(project, debug=True):
 		r = []
-		for t in ProjectSchedule.project.tasks:
-			ps = ProjectSchedule.project.getPersonsForTask(t)
+		for t in project.tasks:
+			ps = project.getPersonsForTask(t)
 			assert ps  #someone has to do this task..
 			a = ProjectSchedule.TaskAssignment(0, choice(ps))
 			r.append(a)
-		return ProjectSchedule(r)
+		return ProjectSchedule(r, project)
 
-	pass
+
+
 
 #region tests
 t1 = Task(1, {'a': 3, 'b': 2}, [])  #1,3
@@ -254,7 +207,6 @@ def personTasksMatrixTest():
 	tasks = [t1, t2, t3, t4, t5]
 	persons = [p1, p2, p3, p4, p5]
 	p = Project(tasks, persons)
-	ProjectSchedule.project = p
 
 	#print ("\n".join(map(str, p.tasks_matrix)))
 	#for e in p.tasks_matrix:
@@ -274,12 +226,12 @@ def generateRandomTest():
 	tasks = [t1, t2, t3, t4, t5]
 	persons = [p1, p2, p3, p4, p5]
 	p = Project(tasks, persons)
-	ProjectSchedule.project = p
+	# ProjectSchedule.project = p
 
 	for _ in range(100):
-		e1 = ProjectSchedule.generateRandomSchedule(True)
+		e1 = ProjectSchedule.generateRandomSchedule(p, True)
 		for assign in e1.data:
-			assert assign.person.canDo(e1.getTaskForAssignment(assign))
+			assert assign.person.canDo(e1._getTaskForAssignment(assign))
 	print("\t-- generateRandomTest: OK !")
 
 def isOkTest():
@@ -287,91 +239,39 @@ def isOkTest():
 	tasks = [t1, t2, t3, t4, t5]
 	persons = [p1, p2, p3, p4, p5]
 	p = Project(tasks, persons)
-	ProjectSchedule.project = p
 
 	# conflict - tasks at the same time
 	b1 = ProjectSchedule.TaskAssignment(0, p3)
 	b2 = ProjectSchedule.TaskAssignment(0, p3)
-	e1 = ProjectSchedule([b1, b2, a3, a4, a5])
+	e1 = ProjectSchedule([b1, b2, a3, a4, a5], p)
 	assert not e1._isOK(debug)
 
 	#conflict - precedence rules
 	pp2 = Project([t1, t5], persons)
-	ProjectSchedule.project = pp2
 	b1 = ProjectSchedule.TaskAssignment(9, p1)
 	b2 = ProjectSchedule.TaskAssignment(0, p3)  # depends on  t1
-	e1 = ProjectSchedule([b1, b2])
+	e1 = ProjectSchedule([b1, b2], pp2)
 	assert not e1._isOK(debug)
 
 	#conflict - person does not have skills to do task
-	ProjectSchedule.project = p
 	b2 = ProjectSchedule.TaskAssignment(0, p3)
-	e1 = ProjectSchedule([b1, b2, a3, a4, a5])
+	e1 = ProjectSchedule([b1, b2, a3, a4, a5], p)
 	b2.person = p2  # cannot do t1
 	try:
-		e1._isOK(debug,throwsIfCritical=True)
+		e1._isOK(debug)
 		assert False
 	except:
 		pass  # exception is expected !
 
 	#ok
 	pp2 = Project([t1, t2, t5], persons)
-	ProjectSchedule.project = pp2
 	b1 = ProjectSchedule.TaskAssignment(0, p3)
 	b2 = ProjectSchedule.TaskAssignment(2, p3)
 	b3 = ProjectSchedule.TaskAssignment(3, p5)
-	e1 = ProjectSchedule([b1, b2, b3])
+	e1 = ProjectSchedule([b1, b2, b3],pp2)
 	assert e1._isOK(debug)
 
 	print("\t-- isOkTest: OK !")
-
-def repairTest():
-	debug = False
-	tasks = [t1, t2, t3, t4, t5]
-	persons = [p1, p2, p3, p4, p5]
-	p = Project(tasks, persons)
-	ProjectSchedule.project = p
-	b1 = ProjectSchedule.TaskAssignment(0, p3)
-	b2 = ProjectSchedule.TaskAssignment(0, p3)
-
-	# conflict - tasks at the same time
-	b1 = ProjectSchedule.TaskAssignment(0, p3)
-	b2 = ProjectSchedule.TaskAssignment(0, p3)
-	e1 = ProjectSchedule([b1, b2, a3, a4, a5])
-	assert not e1._isOK(debug)
-	e1._repair()
-	assert e1._isOK(debug)
-
-	#conflict - precedence rules
-	pp2 = Project([t1, t5], persons)
-	ProjectSchedule.project = pp2
-	b1 = ProjectSchedule.TaskAssignment(9, p1)
-	b2 = ProjectSchedule.TaskAssignment(0, p3)  # depends on  t1
-	e1 = ProjectSchedule([b1, b2])
-	assert not e1._isOK(debug)
-	e1._repair()
-	assert e1._isOK(debug)
-
-	#conflict - person does not have skills to do task
-	ProjectSchedule.project = p
-	b2 = ProjectSchedule.TaskAssignment(0, p3)
-	e1 = ProjectSchedule([b1, b2, a3, a4, a5])
-	b2.person = p2  # cannot do t1
-	# expects Exception thrown in e1._isOK
-	e1._repair()
-	assert e1._isOK(debug)
-
-	#ok
-	pp2 = Project([t1, t2, t5], persons)
-	ProjectSchedule.project = pp2
-	b1 = ProjectSchedule.TaskAssignment(0, p3)
-	b2 = ProjectSchedule.TaskAssignment(2, p3)
-	b3 = ProjectSchedule.TaskAssignment(3, p5)
-	e1 = ProjectSchedule([b1, b2, b3])
-	a = e1._repair()
-	assert e1._isOK(debug) and a == 0
-
-	print("\t-- repairTest: OK !")
 
 #endregion
 
@@ -382,6 +282,5 @@ if __name__ == '__main__':
 	personTasksMatrixTest()
 	generateRandomTest()
 	isOkTest()
-	repairTest()
 
 	print("### Testing end ###")
