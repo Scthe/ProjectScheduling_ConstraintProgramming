@@ -147,7 +147,8 @@ class ProjectSchedule:
 		constraintsAssignements = [ a for (a,t) in zip(self.data, self.project.tasks) if t in task.constraints]
 		return not ( None in constraintsAssignements)
 
-
+	def getAllDoableTasks(self):  # TODO not tested
+		return [ t for (a,t) in zip(self.data, self.project.tasks) if not a and self.doable(t)]
 
 	def assign(self,task,person): # TODO not tested
 		'''
@@ -169,6 +170,10 @@ class ProjectSchedule:
 
 		# assignment
 		self.data[ind] = ProjectSchedule.TaskAssignment(time,person)
+
+	def done(self):  # TODO not tested
+		return sum([1 for a in self.data if a]) == len(self.project.tasks)
+
 
 	@staticmethod
 	def generateRandomSchedule(project, debug=True):

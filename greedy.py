@@ -16,13 +16,13 @@ def greedySchedule(p, bestAssignEvaluator):
 				resources = p.getPersonsForTask(task)
 				bestR, bestScore = bestAssignEvaluator.getBestAssignment(state, task, resources)
 				if not bestNextTask or bestScore < bestNextScore:
-					bestNextResource=bestR
+					bestNextResource = bestR
 					bestNextScore = bestScore
 					bestNextTask = task
 		unscheduledTasks.remove(bestNextTask)
 		state.assign(bestNextTask, bestNextResource)
 
-	assert state._isOK()
+	assert state._isOK() and state.done()
 	et = Evaluate_Time()
 	ec = Evaluate_Cost()
 	print( "Project: time-{}, cost-{}".format( et(state), ec(state) ))
