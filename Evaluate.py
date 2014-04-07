@@ -20,10 +20,10 @@ class Evaluate_Time:
 		'''
 		best = None
 		best_time = 0
+		ns = state.copy()
 		for r in resources:
-			ns = state.copy()
 			ns.assign(task, r)
-			assert ns.isOK()
+			assert ns._isOK()
 			# measure time
 			time = self.__call__(ns)
 			if not best or time < best_time:

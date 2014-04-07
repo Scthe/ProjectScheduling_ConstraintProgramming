@@ -58,6 +58,7 @@ def readProjectDefinition(filePath):
 	people = []
 	for pp in data["people"]:
 		p = Person(readSkills(pp), pp["cost"])
+		# print(p.cost )
 		p._id = pp["id"]
 		people.append(p)
 

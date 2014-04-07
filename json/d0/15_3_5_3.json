@@ -1,1 +1,218 @@
-{"people":[{"id":0,"cost":0.0,"skills":[]},{"id":1,"cost":0.0,"skills":[{"name":" Q0","level":0},{"name":" Q2","level":1}]},{"id":2,"cost":0.0,"skills":[{"name":" Q2","level":0},{"name":" Q0","level":2}]},{"id":3,"cost":0.0,"skills":[{"name":" Q1","level":2},{"name":" Q2","level":2}]}],"tasks":[{"id":1,"duration":28,"skills":[{"name":" Q2","level":0}],"dependables":[]},{"id":2,"duration":29,"skills":[{"name":" Q0","level":2}],"dependables":[]},{"id":3,"duration":15,"skills":[{"name":" Q2","level":0}],"dependables":[]},{"id":4,"duration":35,"skills":[{"name":" Q2","level":2}],"dependables":[]},{"id":5,"duration":17,"skills":[{"name":" Q1","level":2}],"dependables":[]},{"id":6,"duration":8,"skills":[{"name":" Q2","level":1}],"dependables":[]},{"id":7,"duration":30,"skills":[{"name":" Q0","level":0}],"dependables":[]},{"id":8,"duration":22,"skills":[{"name":" Q2","level":2}],"dependables":[]},{"id":9,"duration":34,"skills":[{"name":" Q2","level":2}],"dependables":[]},{"id":10,"duration":27,"skills":[{"name":" Q0","level":0}],"dependables":[]},{"id":11,"duration":23,"skills":[{"name":" Q2","level":2}],"dependables":[]},{"id":12,"duration":24,"skills":[{"name":" Q1","level":2}],"dependables":[]},{"id":13,"duration":23,"skills":[{"name":" Q2","level":2}],"dependables":[]},{"id":14,"duration":32,"skills":[{"name":" Q1","level":2}],"dependables":[]},{"id":15,"duration":11,"skills":[{"name":" Q2","level":2}],"dependables":[]}]}
+{
+  "people": [
+    {
+      "id": 0,
+      "cost": 10.0,
+      "skills": []
+    },
+    {
+      "id": 1,
+      "cost": 66.47416439250023,
+      "skills": [
+        {
+          "name": " Q0",
+          "level": 0
+        },
+        {
+          "name": " Q2",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "cost": 11.83408214480915,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 0
+        },
+        {
+          "name": " Q0",
+          "level": 2
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "cost": 19.682809618080586,
+      "skills": [
+        {
+          "name": " Q1",
+          "level": 2
+        },
+        {
+          "name": " Q2",
+          "level": 2
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "duration": 28,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 0
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 2,
+      "duration": 29,
+      "skills": [
+        {
+          "name": " Q0",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 3,
+      "duration": 15,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 0
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 4,
+      "duration": 35,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 5,
+      "duration": 17,
+      "skills": [
+        {
+          "name": " Q1",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 6,
+      "duration": 8,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 1
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 7,
+      "duration": 30,
+      "skills": [
+        {
+          "name": " Q0",
+          "level": 0
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 8,
+      "duration": 22,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 9,
+      "duration": 34,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 10,
+      "duration": 27,
+      "skills": [
+        {
+          "name": " Q0",
+          "level": 0
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 11,
+      "duration": 23,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 12,
+      "duration": 24,
+      "skills": [
+        {
+          "name": " Q1",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 13,
+      "duration": 23,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 14,
+      "duration": 32,
+      "skills": [
+        {
+          "name": " Q1",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    },
+    {
+      "id": 15,
+      "duration": 11,
+      "skills": [
+        {
+          "name": " Q2",
+          "level": 2
+        }
+      ],
+      "dependables": []
+    }
+  ]
+}

@@ -63,11 +63,11 @@ def branchAndBound(p, evaluator):
 	assert state._isOK() and state.done()
 	et = Evaluate_Time()
 	ec = Evaluate_Cost()
-	print( "Project: time:{}, cost:{}".format( et(state), ec(state) ))
+	print( "Project: time:{:4d}h < {:6.2f} days>, cost: {:5.2f}".format( et(state),et(state)/8, ec(state) ))
 
 if __name__ == '__main__':
-	f1 = "json/D01_10_3_5_3.json"
-	f2 = "json/D02_20_6_10_6.json"
+	f1 = "json/D01_10_3_5_3.json" # 512
+	f2 = "json/D02_20_6_10_6.json" # 57,330,892,800
 	f3 = "json/json_ex.json"
 	f4 = "json/D03_50_10_25_10.json"
 	f5 = "json/100_5_20_9_D3.json"
@@ -82,14 +82,16 @@ if __name__ == '__main__':
 	]
 
 	e = Evaluate_Time()
-	#p = readProjectDefinition(ff[0])
-	#branchAndBound(p,e)
+	# e = Evaluate_Cost()
+	#for f in ff:
+	#	p = readProjectDefinition(f)
+	#	branchAndBound(p,e)
 
-	#branchAndBound(readProjectDefinition(ff[0]),e) # 512
-	#branchAndBound(readProjectDefinition(ff[1]),e) # 96
-	branchAndBound(readProjectDefinition(ff[2]),e) # 45,000
-	#branchAndBound(readProjectDefinition(ff[3]),e) # 72
-	#branchAndBound(readProjectDefinition(ff[4]),e) # 196,608
-	#branchAndBound(readProjectDefinition(ff[5]),e) # 7,838,208
+	# branchAndBound(readProjectDefinition(ff[0]),e) # 512
+	# branchAndBound(readProjectDefinition(ff[1]),e) # 96
+	# branchAndBound(readProjectDefinition(ff[2]),e) # 45,000
+	# branchAndBound(readProjectDefinition(ff[3]),e) # 72
+	# branchAndBound(readProjectDefinition(ff[4]),e) # 196,608
+	branchAndBound(readProjectDefinition(ff[5]),e) # 7,838,208
 
 	print("--- Fin ---")
