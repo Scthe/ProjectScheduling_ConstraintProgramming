@@ -1,12 +1,9 @@
-from random import choice
-
-
 class Task:
 	def __init__(self, timeToComplete, skills, constraints):
-		'''
+		"""
 		:param skills: dict f.e. { 'a':3, 'b':1 }, where literal is the name of the skill and number is expected skill level
 		:param constraints: list of tasks that this task depends on
-		'''
+		"""
 		self.time = timeToComplete
 		self.skills = skills
 		self.constraints = constraints
@@ -17,9 +14,9 @@ class Task:
 
 class Person:
 	def __init__(self, skills, cost):
-		'''
+		"""
 		:param skills: dict f.e. { 'a':3, 'b':1 }, where literal is the name of the skill and number is skill level
-		'''
+		"""
 		self.skills = skills
 		self.cost = cost
 
@@ -45,11 +42,11 @@ class Project:
 
 	@staticmethod
 	def __createPersonTasksMatrix(tasks, persons):
-		'''
+		"""
 		:rtype : dict of <Task, List<Person>>
 		:param tasks:
 		:param persons:
-		'''
+		"""
 		r = dict()
 		for t in tasks:
 			l = [p for p in persons if p.canDo(t)]
@@ -79,8 +76,6 @@ class ProjectSchedule:
 		def __str__(self):
 			return "<sTime:{} p:{}>".format(self.startTime, self.person._id)
 
-
-	''' :type : Project'''
 	project = None
 	data = []
 
@@ -141,9 +136,9 @@ class ProjectSchedule:
 		return self.project.tasks[self.data.index(assignment)]
 
 	def doable(self, task): # TODO not tested
-		'''
+		"""
 		:type task Task
-		'''
+		"""
 		constraintsAssignements = [ a for (a,t) in zip(self.data, self.project.tasks) if t in task.constraints]
 		return not ( None in constraintsAssignements)
 
@@ -151,10 +146,10 @@ class ProjectSchedule:
 		return [ t for (a,t) in zip(self.data, self.project.tasks) if not a and self.doable(t)]
 
 	def assign(self,task,person): # TODO not tested
-		'''
+		"""
 		:type task Task
 		:type person Person
-		'''
+		"""
 		tasks = self.project.tasks
 		ind = tasks.index(task)
 		time = 0
@@ -175,25 +170,13 @@ class ProjectSchedule:
 		return sum([1 for a in self.data if a]) == len(self.project.tasks)
 
 
-	@staticmethod
-	def generateRandomSchedule(project, debug=True):
-		r = []
-		for t in project.tasks:
-			ps = project.getPersonsForTask(t)
-			assert ps  #someone has to do this task..
-			a = ProjectSchedule.TaskAssignment(0, choice(ps))
-			r.append(a)
-		return ProjectSchedule(r, project)
-
-
-
 
 #region tests
-t1 = Task(1, {'a': 3, 'b': 2}, [])  #1,3
-t2 = Task(2, {'a': 1, 'd': 2}, [])  #3
-t3 = Task(3, {'c': 3}, [])  #3,4
-t4 = Task(4, {}, [])  #everyone
-t5 = Task(5, {}, [t1])  #everyone
+t1 = Task(1, {'a': 3, 'b': 2}, [])  # 1,3
+t2 = Task(2, {'a': 1, 'd': 2}, [])  # 3
+t3 = Task(3, {'c': 3}, [])  # 3,4
+t4 = Task(4, {}, [])  # everyone
+t5 = Task(5, {}, [t1])  # everyone
 
 p1 = Person({'a': 3, 'b': 2}, 1)  #1,4,5
 p2 = Person({'a': 3, 'b': 1}, 2)  #4,5
@@ -206,7 +189,6 @@ a2 = ProjectSchedule.TaskAssignment(0, p3)
 a3 = ProjectSchedule.TaskAssignment(0, p4)
 a4 = ProjectSchedule.TaskAssignment(0, p2)
 a5 = ProjectSchedule.TaskAssignment(0, p2)
-
 
 def personTasksMatrixTest():
 	tasks = [t1, t2, t3, t4, t5]
@@ -226,18 +208,6 @@ def personTasksMatrixTest():
 	assert test(4, persons)
 
 	print("\t-- personTasksMatrixTest: OK !")
-
-def generateRandomTest():
-	tasks = [t1, t2, t3, t4, t5]
-	persons = [p1, p2, p3, p4, p5]
-	p = Project(tasks, persons)
-	# ProjectSchedule.project = p
-
-	for _ in range(100):
-		e1 = ProjectSchedule.generateRandomSchedule(p, True)
-		for assign in e1.data:
-			assert assign.person.canDo(e1._getTaskForAssignment(assign))
-	print("\t-- generateRandomTest: OK !")
 
 def isOkTest():
 	debug = False
@@ -283,9 +253,6 @@ def isOkTest():
 
 if __name__ == '__main__':
 	print("### Testing ###")
-
 	personTasksMatrixTest()
-	generateRandomTest()
 	isOkTest()
-
 	print("### Testing end ###")

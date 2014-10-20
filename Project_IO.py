@@ -1,7 +1,7 @@
 import json
 from Entity import Project, Task, Person, ProjectSchedule
 
-'''
+"""
 	{
 	 "id":1,
 	 "duration":36,
@@ -25,7 +25,7 @@ from Entity import Project, Task, Person, ProjectSchedule
 		}
 	 ]
 	}
-	'''
+"""
 
 def readSkills(obj):
 	skills = dict()
@@ -65,15 +65,10 @@ def readProjectDefinition(filePath):
 	return Project(tasks, people)
 
 
-'''
-def storeEvalData(eval):
-	print("store eval data")
-	print( "total collected: " + str(len(eval.best)))
-	#ok = [e for e in eval.best if eval(e) <= eval.bestScore] # !!!
-	#print( len(ok))
-	obj = { "score":eval.bestScore, "values":[]}
-	for i,assign in enumerate(eval.best[0].data):
-		obj["values"].append({"taskId":i,"startTime":assign.startTime,"person:":assign.person._id})
-	with open('data.txt', 'w') as outfile:
+def writeScheduleToFile(schedule, filePath):
+	obj = { "values":[]}
+	for i,assign in enumerate(schedule.data):
+		obj["values"].append({"taskId":i,"startTime":assign.startTime,"person":assign.person._id})
+	with open( filePath, 'w') as outfile:
+		outfile.
 		json.dump(obj, fp=outfile, indent=4 )
-'''

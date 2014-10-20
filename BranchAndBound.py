@@ -1,7 +1,7 @@
 from Entity import Project,Person,Task, ProjectSchedule
 import locale
-from z2.Evaluate import Evaluate_Time, Evaluate_Cost
-from z2.Project_IO import readProjectDefinition
+from z2.Evaluate import Evaluate_Time, Evaluate_Cost, timeit
+from z2.Project_IO import readProjectDefinition, writeScheduleToFile
 
 class Permutator():
 
@@ -14,8 +14,8 @@ class Permutator():
 	def __expand(self, state, i=0):
 		# get task to ponder about
 		task = self.taskSelection[i]
-		if not task:
-			print("{:,d} /{:,d} -> {:.2f}".format(self.permutation_i, self.permutationCount, (self.permutation_i/ self.permutationCount*100)))
+		if not task: # TODO use yield ?
+			#print("{:,d} /{:,d} -> {:.2f}".format(self.permutation_i, self.permutationCount, (self.permutation_i/ self.permutationCount*100)))
 			self.permutation_i += 1
 
 			# ah ! no more tasks - we can eval current solution
@@ -43,6 +43,7 @@ class Permutator():
 		# do all the work. just like that
 		self.__expand(state)
 
+@timeit
 def branchAndBound(p, evaluator):
 	"""
 	:type p: Project
@@ -50,7 +51,7 @@ def branchAndBound(p, evaluator):
 	state = ProjectSchedule([None for _ in range(len(p.tasks))], p)
 	permutator = Permutator(evaluator)
 	while not state.done():
-		print("done {} /{}".format(sum([1 for a in state.data if a]), len(state.data)))
+		#print("done {} /{}".format(sum([1 for a in state.data if a]), len(state.data)))
 		# get all possible tasks
 		tasks = state.getAllDoableTasks()
 		# do stuff
@@ -64,6 +65,7 @@ def branchAndBound(p, evaluator):
 	et = Evaluate_Time()
 	ec = Evaluate_Cost()
 	print( "Project: time:{:4d}h < {:6.2f} days>, cost: {:5.2f}".format( et(state),et(state)/8, ec(state) ))
+	return state
 
 if __name__ == '__main__':
 	f1 = "json/D01_10_3_5_3.json" # 512
@@ -78,20 +80,15 @@ if __name__ == '__main__':
 		"json/d0/10_7_10_7.json",
 		"json/d0/15_3_5_3.json",
 		"json/d0/15_6_10_6.json",
-		"json/d0/15_9_12_9.json"
+		#"json/d0/15_9_12_9.json"
 	]
 
 	e = Evaluate_Time()
 	# e = Evaluate_Cost()
-	#for f in ff:
-	#	p = readProjectDefinition(f)
-	#	branchAndBound(p,e)
+	for f in ff:
+		p = readProjectDefinition(f)
+		s = branchAndBound(p,e)
+		newName = "results/bb_"+f[f.rfind('/')+1:]
+		writeScheduleToFile(s, newName)
 
-	# branchAndBound(readProjectDefinition(ff[0]),e) # 512
-	# branchAndBound(readProjectDefinition(ff[1]),e) # 96
-	# branchAndBound(readProjectDefinition(ff[2]),e) # 45,000
-	# branchAndBound(readProjectDefinition(ff[3]),e) # 72
-	# branchAndBound(readProjectDefinition(ff[4]),e) # 196,608
-	branchAndBound(readProjectDefinition(ff[5]),e) # 7,838,208
-
-	print("--- Fin ---")
+	print("--- end ---")

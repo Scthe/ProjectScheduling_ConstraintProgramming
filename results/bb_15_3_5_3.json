@@ -1,0 +1,79 @@
+{
+    "values": [
+        {
+            "person": 1, 
+            "startTime": 0, 
+            "taskId": 0
+        }, 
+        {
+            "person": 2, 
+            "startTime": 0, 
+            "taskId": 1
+        }, 
+        {
+            "person": 1, 
+            "startTime": 28, 
+            "taskId": 2
+        }, 
+        {
+            "person": 3, 
+            "startTime": 0, 
+            "taskId": 3
+        }, 
+        {
+            "person": 3, 
+            "startTime": 35, 
+            "taskId": 4
+        }, 
+        {
+            "person": 1, 
+            "startTime": 43, 
+            "taskId": 5
+        }, 
+        {
+            "person": 1, 
+            "startTime": 51, 
+            "taskId": 6
+        }, 
+        {
+            "person": 3, 
+            "startTime": 52, 
+            "taskId": 7
+        }, 
+        {
+            "person": 3, 
+            "startTime": 74, 
+            "taskId": 8
+        }, 
+        {
+            "person": 1, 
+            "startTime": 81, 
+            "taskId": 9
+        }, 
+        {
+            "person": 3, 
+            "startTime": 108, 
+            "taskId": 10
+        }, 
+        {
+            "person": 3, 
+            "startTime": 131, 
+            "taskId": 11
+        }, 
+        {
+            "person": 3, 
+            "startTime": 155, 
+            "taskId": 12
+        }, 
+        {
+            "person": 3, 
+            "startTime": 178, 
+            "taskId": 13
+        }, 
+        {
+            "person": 3, 
+            "startTime": 210, 
+            "taskId": 14
+        }
+    ]
+}

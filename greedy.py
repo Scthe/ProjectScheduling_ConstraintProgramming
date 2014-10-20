@@ -1,7 +1,8 @@
-from Entity import Project,Person,Task, ProjectSchedule
-from z2.Evaluate import Evaluate_Time, Evaluate_Cost
-from z2.Project_IO import readProjectDefinition
+from Entity import Project, Person, Task, ProjectSchedule
+from z2.Evaluate import Evaluate_Time, Evaluate_Cost, timeit
+from z2.Project_IO import readProjectDefinition, writeScheduleToFile
 
+@timeit
 def greedySchedule(p, bestAssignEvaluator):
 	"""
 	:type p: Project
@@ -26,11 +27,12 @@ def greedySchedule(p, bestAssignEvaluator):
 	assert state._isOK() and state.done()
 	et = Evaluate_Time()
 	ec = Evaluate_Cost()
-	print( "Project: time:{:4d}h < {:6.2f} days>, cost: {:5.2f}".format( et(state),et(state)/8, ec(state) ))
+	print("Project: time:{:4d}h <{:6.2f} days>, cost: {:5.2f}".format(et(state), et(state) / 8, ec(state)))
+	return state
 
 if __name__ == '__main__':
-	f1 = "json/D01_10_3_5_3.json" # 512 | 90
-	f2 = "json/D02_20_6_10_6.json" # 57,330,892,800
+	f1 = "json/D01_10_3_5_3.json"  # 512 | 90
+	f2 = "json/D02_20_6_10_6.json"  # 57,330,892,800
 	f3 = "json/json_ex.json"
 	f4 = "json/D03_50_10_25_10.json"
 	f5 = "json/100_5_20_9_D3.json"
@@ -44,15 +46,17 @@ if __name__ == '__main__':
 		"json/d0/15_9_12_9.json"
 	]
 
-	e = Evaluate_Time()
+	# e = Evaluate_Time()
 	e = Evaluate_Cost()
+
 	for f in ff:
 		p = readProjectDefinition(f)
-		greedySchedule(p,e)
+		s = greedySchedule(p, e)
+		# for i, task in enumerate(p.tasks):
+		# 	t = min( [p.cost for p in p.getPersonsForTask(task)])
+		# 	t2 = s.data[i].person.cost
+			#print("#{}:: my:{:5f}; min {:5f} (selected from {} res.) --> {}".format(i, t2, t,len(p.getPersonsForTask(task)), ("Match !" if t2 - t == 0 else "~~")))
+		newName = "results/greedy_"+f[f.rfind('/')+1:]
+		writeScheduleToFile(s, newName)
 
-	#branchAndBound(readProjectDefinition(ff[0]),e) # 512
-	#branchAndBound(readProjectDefinition(ff[1]),e) # 96
-	# branchAndBound(readProjectDefinition(ff[2]),e) # 45,000
-	#branchAndBound(readProjectDefinition(ff[3]),e) # 72
-	#branchAndBound(readProjectDefinition(ff[4]),e) # 196,608
-	#branchAndBound(readProjectDefinition(ff[5]),e) # 7,838,208
+	print("--- end ---")
