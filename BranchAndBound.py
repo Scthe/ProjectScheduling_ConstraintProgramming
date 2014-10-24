@@ -1,7 +1,7 @@
-from Entity import Project,Person,Task, ProjectSchedule
 import locale
-from z2.Evaluate import Evaluate_Time, Evaluate_Cost, timeit
-from z2.Project_IO import readProjectDefinition, writeScheduleToFile
+from Entity import Project,Person,Task, ProjectSchedule
+from Evaluate import Evaluate_Time, Evaluate_Cost, timeit
+from Project_IO import readProjectDefinition, writeScheduleToFile
 
 class Permutator():
 

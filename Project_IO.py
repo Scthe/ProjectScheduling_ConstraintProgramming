@@ -70,5 +70,4 @@ def writeScheduleToFile(schedule, filePath):
 	for i,assign in enumerate(schedule.data):
 		obj["values"].append({"taskId":i,"startTime":assign.startTime,"person":assign.person._id})
 	with open( filePath, 'w') as outfile:
-		outfile.
 		json.dump(obj, fp=outfile, indent=4 )

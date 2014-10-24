@@ -1,4 +1,4 @@
-from z2.Entity import ProjectSchedule
+from Entity import ProjectSchedule
 import time
 
 # duration optimization

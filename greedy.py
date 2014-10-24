@@ -1,6 +1,6 @@
 from Entity import Project, Person, Task, ProjectSchedule
-from z2.Evaluate import Evaluate_Time, Evaluate_Cost, timeit
-from z2.Project_IO import readProjectDefinition, writeScheduleToFile
+from Evaluate import Evaluate_Time, Evaluate_Cost, timeit
+from Project_IO import readProjectDefinition, writeScheduleToFile
 
 @timeit
 def greedySchedule(p, bestAssignEvaluator):
